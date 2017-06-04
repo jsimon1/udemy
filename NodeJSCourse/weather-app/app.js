@@ -1,12 +1,39 @@
 const request = require('request');
+const yargs = require('yargs');
+
+// yargs init
+// demand = required, string is true to ensure a string is passed with the address flag
+const argv = yargs
+  .options({
+    a: {
+      demand: true,
+      alias: 'address',
+      describe: 'Address to fetch weather data',
+      string: true
+    }
+  })
+  .help()
+  .alias('help', 'h')
+  .argv;
+
+// EncodedURIComponent makes a string link-friendly
+var address = encodeURIComponent(argv.address);
 
 request({
-  url: 'https://maps.googleapis.com/maps/api/geocode/json?address=6%20Myrtle%20Street%20Montvale',
+  url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
   json: true
 }, (err, response, body) => {
-  console.log(`Address: ${body.results[0].formatted_address}`);
-  console.log(`Lat: ${body.results[0].geometry.location.lat}`);
-  console.log(`Long: ${body.results[0].geometry.location.lng}`);
+  if (err) {
+    console.log('Unable to connect to Google servers.');
+  }
+  else if (body.status === "OK") {
+    console.log(`Address: ${body.results[0].formatted_address}`);
+    console.log(`Lat: ${body.results[0].geometry.location.lat}`);
+    console.log(`Long: ${body.results[0].geometry.location.lng}`);
+  }
+  else {
+    console.log("Error with address")
+  }
 });
 
 // Sample request - can define options in first parameter, second is a callback.
