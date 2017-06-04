@@ -1,2 +1,3 @@
 NodeJSCourse/notes-node/node_modules/*
 NodeJSCourse/weather-app/node_modules/*
+.gitignore
