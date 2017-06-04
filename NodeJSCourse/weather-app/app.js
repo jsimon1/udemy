@@ -1,5 +1,6 @@
-const request = require('request');
 const yargs = require('yargs');
+
+const geocode = require('./geocode/geocode.js');
 
 // yargs init
 // demand = required, string is true to ensure a string is passed with the address flag
@@ -16,26 +17,13 @@ const argv = yargs
   .alias('help', 'h')
   .argv;
 
-// EncodedURIComponent makes a string link-friendly
-var address = encodeURIComponent(argv.address);
-
-request({
-  url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}`,
-  json: true
-}, (err, response, body) => {
+geocode.geocodeAddress(argv.address, (err, results) => {
   if (err) {
-    console.log('Unable to connect to Google servers.');
-  }
-  else if (body.status === "OK") {
-    console.log(`Address: ${body.results[0].formatted_address}`);
-    console.log(`Lat: ${body.results[0].geometry.location.lat}`);
-    console.log(`Long: ${body.results[0].geometry.location.lng}`);
-  }
-  else {
-    console.log("Error with address")
+    console.log(err);
+  } else {
+    console.log(JSON.stringify(results, undefined, 2));
   }
 });
-
 // Sample request - can define options in first parameter, second is a callback.
 // JSON.stringify takes the object as its first paramter, a filter as its second paramter, and the number of spaces
 // to pretty print the JSON (instead of it just being a garbled paragraph of objects)
