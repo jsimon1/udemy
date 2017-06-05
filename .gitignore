@@ -1,3 +1,5 @@
 NodeJSCourse/notes-node/node_modules/*
 NodeJSCourse/weather-app/node_modules/*
+NodeJSCourse/node-web-server/node_modules/*
+NodeJSCourse/playground/node_modules/*
 .gitignore

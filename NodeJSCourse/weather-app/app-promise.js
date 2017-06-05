@@ -1,7 +1,5 @@
 const yargs = require('yargs');
-
-const geocode = require('./geocode/geocode.js');
-const weather = require('./weather/weather.js');
+const axios = require('axios');
 
 // yargs init
 // demand = required, string is true to ensure a string is passed with the address flag
@@ -18,19 +16,26 @@ const argv = yargs
   .alias('help', 'h')
   .argv;
 
-geocode.geocodeAddress(argv.address, (err, results) => {
-  if (err) {
-    console.log(err);
+var encodedAddress = encodeURIComponent(argv.address);
+var geocodeURL = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}`;
+axios.get(geocodeURL).then((response) => {
+  if(response.data.status === 'ZERO_RESULTS') {
+    throw new Error('Unable to find address');
+  }
+  var lat = response.data.results[0].geometry.location.lat;
+  var lng = response.data.results[0].geometry.location.lng;
+  var weatherURL = `https://api.darksky.net/forecast/0d17dd4babb710edb8f4ce2adf5bb4c2/${lat},${lng}`;
+  console.log(response.data.results[0].formatted_address);
+  return axios.get(weatherURL);
+}).then((response) => {
+  var temp = response.data.currently.temperature;
+  var appTemp = response.data.currently.apparentTemperature;
+  console.log(`It's currently ${temp}. It feels like ${appTemp}.`)
+}).catch((err) => {
+  if(err.code === 'ENOTFOUND') {
+      console.log("Unable to connect to Google Maps API");
   } else {
-    console.log(results.address);
-    weather.getWeather(results.lat, results.lng, (err, results) => {
-      if (err) {
-        console.log(err);
-      }
-      else {
-        console.log(`It's currently ${results.temp}. It feels like ${results.appTemp}`);
-      }
-    });
+    console.log(err.message);
   }
 });
 
