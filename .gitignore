@@ -3,4 +3,5 @@ NodeJSCourse/weather-app/node_modules/*
 NodeJSCourse/node-web-server/node_modules/*
 NodeJSCourse/playground/node_modules/*
 NodeJSCourse/node-tests/node_modules/*
+node-to-api/node_modules/*
 .gitignore
